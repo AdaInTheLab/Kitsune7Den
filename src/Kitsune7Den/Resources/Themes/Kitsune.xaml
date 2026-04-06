@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Kitsune (Default) — Deep navy + red accent -->
+    <Color x:Key="BgDark">#FF1a1a2e</Color>
+    <Color x:Key="BgMedium">#FF16213e</Color>
+    <Color x:Key="BgLight">#FF0f3460</Color>
+    <Color x:Key="Accent">#FFe94560</Color>
+    <Color x:Key="AccentHover">#FFff6b6b</Color>
+    <Color x:Key="TextPrimary">#FFe0e0e0</Color>
+    <Color x:Key="TextSecondary">#FF8a8a9a</Color>
+    <Color x:Key="BorderColor">#FF2a2a4a</Color>
+    <Color x:Key="SuccessColor">#FF4ecca3</Color>
+    <Color x:Key="WarningColor">#FFffc857</Color>
+</ResourceDictionary>

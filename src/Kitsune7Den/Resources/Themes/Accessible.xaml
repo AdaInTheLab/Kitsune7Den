@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Accessible — Colorblind-friendly using blue/orange (no red/green) with high contrast -->
+    <Color x:Key="BgDark">#FF0f0f14</Color>
+    <Color x:Key="BgMedium">#FF1a1a22</Color>
+    <Color x:Key="BgLight">#FF2d2d3d</Color>
+    <Color x:Key="Accent">#FFe89040</Color>
+    <Color x:Key="AccentHover">#FFf0a858</Color>
+    <Color x:Key="TextPrimary">#FFF0F0F0</Color>
+    <Color x:Key="TextSecondary">#FFa0a0b0</Color>
+    <Color x:Key="BorderColor">#FF3a3a4a</Color>
+    <Color x:Key="SuccessColor">#FF4a90d9</Color>
+    <Color x:Key="WarningColor">#FFe89040</Color>
+</ResourceDictionary>

@@ -1,0 +1,39 @@
+## .NET / Visual Studio
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+*.DotSettings.user
+
+## Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+## NuGet
+*.nupkg
+**/packages/*
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+
+## Rider / JetBrains
+.idea/
+*.sln.iml
+
+## OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+## Claude
+.claude/

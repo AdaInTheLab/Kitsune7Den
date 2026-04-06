@@ -1,0 +1,196 @@
+<UserControl x:Class="Kitsune7Den.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Kitsune7Den.Converters">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolVis" />
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel MaxWidth="750">
+
+            <!-- Appearance -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="Appearance" />
+                    <TextBlock Text="Theme" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,4" />
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox ItemsSource="{Binding AvailableThemes}"
+                                  SelectedItem="{Binding SelectedTheme}" Width="200" />
+                        <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
+                                   VerticalAlignment="Center" Margin="12,0,0,0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedTheme}" Value="Kitsune">
+                                            <Setter Property="Text" Value="Deep navy + red accent (default)" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedTheme}" Value="Midnight">
+                                            <Setter Property="Text" Value="Dark charcoal + cool blue accent" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedTheme}" Value="Forest">
+                                            <Setter Property="Text" Value="Dark green tones + amber accent" />
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding SelectedTheme}" Value="Accessible">
+                                            <Setter Property="Text" Value="High contrast, colorblind-friendly (blue/orange, no red/green)" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                    <TextBlock Text="v1.0.0 | github.com/AdaInTheLab/Kitsune7Den"
+                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
+                               Opacity="0.5" Margin="0,12,0,0" />
+                </StackPanel>
+            </Border>
+
+            <!-- SteamCMD Section -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="SteamCMD" />
+                    <TextBlock Text="SteamCMD lets you install and update the 7D2D dedicated server directly."
+                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,12" />
+
+                    <!-- SteamCMD Path -->
+                    <TextBlock Text="SteamCMD Path" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,4" />
+                    <DockPanel Margin="0,0,0,8">
+                        <Button DockPanel.Dock="Right" Content="Browse" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding BrowseSteamCmdCommand}" Margin="8,0,0,0" />
+                        <Button DockPanel.Dock="Right" Content="Download" Style="{StaticResource ActionButton}"
+                                Command="{Binding DownloadSteamCmdCommand}" Margin="8,0,0,0"
+                                IsEnabled="{Binding IsUpdating, Converter={StaticResource InverseBool}}"
+                                ToolTip="Downloads SteamCMD automatically" />
+                        <TextBox Style="{StaticResource DarkTextBox}" Text="{Binding SteamCmdPath, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Path to steamcmd.exe" />
+                    </DockPanel>
+
+                    <!-- Status indicator -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <Ellipse Width="8" Height="8" Margin="0,0,6,0">
+                            <Ellipse.Style>
+                                <Style TargetType="Ellipse">
+                                    <Setter Property="Fill" Value="{DynamicResource AccentBrush}" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SteamCmdAvailable}" Value="True">
+                                            <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Ellipse.Style>
+                        </Ellipse>
+                        <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="SteamCMD not found" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SteamCmdAvailable}" Value="True">
+                                            <Setter Property="Text" Value="SteamCMD ready" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Server Install Section -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="Server Installation" />
+
+                    <!-- Install Directory -->
+                    <TextBlock Text="Install Directory" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,4" />
+                    <DockPanel Margin="0,0,0,12">
+                        <Button DockPanel.Dock="Right" Content="Browse" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding BrowseInstallDirCommand}" Margin="8,0,0,0" />
+                        <TextBox Style="{StaticResource DarkTextBox}" Text="{Binding ServerInstallDirectory, UpdateSourceTrigger=PropertyChanged}"
+                                 ToolTip="Where the 7D2D server files will be installed" />
+                    </DockPanel>
+
+                    <!-- Branch / Version -->
+                    <TextBlock Text="Server Branch" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,4" />
+                    <ComboBox ItemsSource="{Binding Branches}" SelectedItem="{Binding SelectedBranch}"
+                              IsEditable="True" Margin="0,0,0,12" Padding="8,6" FontSize="13"
+                              ToolTip="Select a known branch or type a custom one (e.g. alpha21.2)" />
+
+                    <!-- Options -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <CheckBox Content="Auto-update on server start" IsChecked="{Binding AutoUpdateOnStart}"
+                                  Foreground="{DynamicResource TextPrimaryBrush}" Margin="0,0,24,0" VerticalContentAlignment="Center" />
+                        <CheckBox Content="Validate files" IsChecked="{Binding ValidateOnUpdate}"
+                                  Foreground="{DynamicResource TextPrimaryBrush}" VerticalContentAlignment="Center"
+                                  ToolTip="Runs file validation during update (slower but fixes corrupted files)" />
+                    </StackPanel>
+
+                    <!-- Install/Update button -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="Install / Update Server" Style="{StaticResource ActionButton}"
+                                Command="{Binding InstallOrUpdateCommand}"
+                                IsEnabled="{Binding IsUpdating, Converter={StaticResource InverseBool}}"
+                                Margin="0,0,8,0" />
+                        <Button Content="Cancel" Style="{StaticResource SecondaryButton}"
+                                Command="{Binding CancelUpdateCommand}"
+                                Visibility="{Binding IsUpdating, Converter={StaticResource BoolVis}}" />
+                    </StackPanel>
+
+                    <!-- Update Log -->
+                    <ListBox ItemsSource="{Binding UpdateLog}" MaxHeight="200"
+                             Background="#FF0d0d1a" Foreground="{DynamicResource TextPrimaryBrush}"
+                             BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                             FontFamily="Consolas" FontSize="11"
+                             Visibility="{Binding IsUpdating, Converter={StaticResource BoolVis}}"
+                             VirtualizingPanel.IsVirtualizing="True">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="6,1" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Telnet Section -->
+            <Border Style="{StaticResource Card}">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="Telnet Connection" />
+                    <TextBlock Text="These should match the values in your serverconfig.xml. Kitsune7Den uses telnet to send commands and read player data."
+                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12" Margin="0,0,0,12" TextWrapping="Wrap" />
+
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Telnet Port" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,4" />
+                            <TextBox Style="{StaticResource DarkTextBox}" Text="{Binding TelnetPort, UpdateSourceTrigger=PropertyChanged}" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Telnet Password" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,4" />
+                            <PasswordBox x:Name="TelnetPasswordBox" Loaded="TelnetPasswordBox_Loaded"
+                                         PasswordChanged="TelnetPasswordBox_Changed"
+                                                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                         Padding="8,6" FontSize="13" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- Save + Status -->
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,24">
+                <Button Content="Save All Settings" Style="{StaticResource ActionButton}"
+                        Command="{Binding SaveCommand}" Margin="0,0,16,0" />
+                <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}"
+                           FontSize="12" VerticalAlignment="Center" />
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,14 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Midnight — Deep charcoal + cool blue accent -->
+    <Color x:Key="BgDark">#FF121218</Color>
+    <Color x:Key="BgMedium">#FF1a1a24</Color>
+    <Color x:Key="BgLight">#FF2a2a3a</Color>
+    <Color x:Key="Accent">#FF5b8af5</Color>
+    <Color x:Key="AccentHover">#FF7ba4ff</Color>
+    <Color x:Key="TextPrimary">#FFdadae0</Color>
+    <Color x:Key="TextSecondary">#FF7a7a8e</Color>
+    <Color x:Key="BorderColor">#FF2e2e3e</Color>
+    <Color x:Key="SuccessColor">#FF4ecca3</Color>
+    <Color x:Key="WarningColor">#FFf0b050</Color>
+</ResourceDictionary>

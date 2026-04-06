@@ -1,0 +1,207 @@
+<UserControl x:Class="Kitsune7Den.Views.ConfigView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Kitsune7Den.ViewModels"
+             xmlns:models="clr-namespace:Kitsune7Den.Models"
+             Loaded="OnLoaded">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Header Bar -->
+        <Border Grid.Row="0" Background="{DynamicResource BgMediumBrush}"
+                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,0,1"
+                Padding="24,12">
+            <DockPanel>
+                <!-- Title -->
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Server Configuration" Foreground="{DynamicResource TextPrimaryBrush}"
+                               FontSize="16" FontWeight="SemiBold" />
+                    <TextBlock Text="  (serverconfig.xml)" Foreground="{DynamicResource TextSecondaryBrush}"
+                               FontSize="12" VerticalAlignment="Bottom" Margin="0,0,0,1" />
+                </StackPanel>
+
+                <!-- Right-side buttons -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- View Toggle -->
+                    <Border CornerRadius="6" Background="#FF0d0d1a" Padding="2" Margin="0,0,12,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="Form View" Command="{Binding SwitchToFormCommand}"
+                                    Padding="10,5" FontSize="12" Cursor="Hand" BorderThickness="0">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                            Padding="{TemplateBinding Padding}" CornerRadius="4">
+                                                        <ContentPresenter HorizontalAlignment="Center" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsFormView}" Value="True">
+                                                <Setter Property="Background" Value="{DynamicResource BgLightBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                            <Button Content="Raw XML" Command="{Binding SwitchToRawCommand}"
+                                    Padding="10,5" FontSize="12" Cursor="Hand" BorderThickness="0">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="Transparent" />
+                                        <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                                                            Padding="{TemplateBinding Padding}" CornerRadius="4">
+                                                        <ContentPresenter HorizontalAlignment="Center" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsFormView}" Value="False">
+                                                <Setter Property="Background" Value="{DynamicResource BgLightBrush}" />
+                                                <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+
+                    <Button Content="Reset" Style="{StaticResource SecondaryButton}"
+                            Command="{Binding ResetCommand}" Margin="0,0,8,0" />
+                    <Button Content="Save Changes" Style="{StaticResource ActionButton}"
+                            Command="{Binding SaveCommand}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Form View -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,16,24,24"
+                      Visibility="{Binding IsFormView, Converter={StaticResource BoolVis}}">
+            <ItemsControl ItemsSource="{Binding Groups}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type vm:ConfigGroup}">
+                        <!-- Category Card -->
+                        <Border Background="{DynamicResource BgMediumBrush}" CornerRadius="8"
+                                BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
+                                Margin="0,0,0,16" Padding="0">
+                            <DockPanel>
+                                <!-- Accent left border -->
+                                <Border DockPanel.Dock="Left" Width="4" CornerRadius="8,0,0,8"
+                                        Background="{DynamicResource AccentBrush}" />
+
+                                <StackPanel Margin="20,16,20,20">
+                                    <!-- Category Header -->
+                                    <TextBlock Text="{Binding NameUpper}" Foreground="{DynamicResource TextPrimaryBrush}"
+                                               FontSize="14" FontWeight="Bold" Margin="0,0,0,16" />
+
+                                    <!-- Properties in wrap panel (2-col layout) -->
+                                    <ItemsControl ItemsSource="{Binding Properties}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate DataType="{x:Type models:ServerConfigProperty}">
+                                                <StackPanel Width="330" Margin="0,0,24,16">
+                                                    <!-- Field Label -->
+                                                    <TextBlock Text="{Binding DisplayName}"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               FontSize="11" Margin="0,0,0,4" />
+
+                                                    <!-- Field Input (chosen by type) -->
+                                                    <ContentControl>
+                                                        <ContentControl.Style>
+                                                            <Style TargetType="ContentControl">
+                                                                <!-- Default: TextBox -->
+                                                                <Setter Property="Content">
+                                                                    <Setter.Value>
+                                                                        <TextBox Style="{StaticResource DarkTextBox}"
+                                                                                 Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                                    </Setter.Value>
+                                                                </Setter>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding FieldType}" Value="Select">
+                                                                        <Setter Property="Content">
+                                                                            <Setter.Value>
+                                                                                <ComboBox ItemsSource="{Binding SelectOptions}"
+                                                                                          SelectedItem="{Binding SelectedOption}"
+                                                                                          DisplayMemberPath="Label" />
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding FieldType}" Value="Boolean">
+                                                                        <Setter Property="Content">
+                                                                            <Setter.Value>
+                                                                                <ComboBox SelectedItem="{Binding Value}">
+                                                                                    <ComboBoxItem Content="true" />
+                                                                                    <ComboBoxItem Content="false" />
+                                                                                </ComboBox>
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+                                                                    <DataTrigger Binding="{Binding FieldType}" Value="Password">
+                                                                        <Setter Property="Content">
+                                                                            <Setter.Value>
+                                                                                <TextBox Style="{StaticResource DarkTextBox}"
+                                                                                         Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" />
+                                                                            </Setter.Value>
+                                                                        </Setter>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </ContentControl.Style>
+                                                    </ContentControl>
+
+                                                    <!-- Description -->
+                                                    <TextBlock Text="{Binding Description}"
+                                                               Foreground="{DynamicResource TextSecondaryBrush}"
+                                                               FontSize="10" Margin="0,3,0,0" TextWrapping="Wrap"
+                                                               Opacity="0.7" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Raw XML View -->
+        <Grid Grid.Row="1" Margin="24,16,24,24"
+              Visibility="{Binding IsFormView, Converter={StaticResource InverseBoolVis}}">
+            <TextBox Style="{StaticResource DarkTextBox}"
+                     Text="{Binding RawXml, UpdateSourceTrigger=PropertyChanged}"
+                     FontFamily="Consolas" FontSize="12"
+                     AcceptsReturn="True" AcceptsTab="True"
+                     VerticalScrollBarVisibility="Auto"
+                     HorizontalScrollBarVisibility="Auto"
+                     TextWrapping="NoWrap" />
+        </Grid>
+
+        <!-- Status Bar -->
+        <TextBlock Grid.Row="1" Text="{Binding StatusMessage}"
+                   Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
+                   VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                   Margin="24,0,0,8" />
+    </Grid>
+</UserControl>

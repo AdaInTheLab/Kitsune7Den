@@ -1,0 +1,237 @@
+using System.Diagnostics;
+using System.IO;
+using Kitsune7Den.Models;
+
+namespace Kitsune7Den.Services;
+
+public class ServerProcessService : IDisposable
+{
+    private Process? _serverProcess;
+    private readonly AppSettings _settings;
+    private readonly SteamCmdService _steamCmd;
+    private DateTime? _startedAt;
+    private string? _currentLogFile;
+
+    private const string SteamAppId = "251570";
+    private const int MaxLogFiles = 20;
+
+    public event Action<ServerState>? StateChanged;
+    public event Action<string>? OutputReceived;
+
+    public ServerState CurrentState { get; private set; } = ServerState.Stopped;
+
+    public ServerProcessService(AppSettings settings, SteamCmdService steamCmd)
+    {
+        _settings = settings;
+        _steamCmd = steamCmd;
+
+        // Pipe SteamCMD output through to console during auto-update
+        _steamCmd.OutputReceived += line => OutputReceived?.Invoke($"[SteamCMD] {line}");
+    }
+
+    public TimeSpan Uptime => _startedAt.HasValue ? DateTime.UtcNow - _startedAt.Value : TimeSpan.Zero;
+
+    public async Task<bool> StartAsync()
+    {
+        if (CurrentState != ServerState.Stopped)
+            return false;
+
+        if (string.IsNullOrWhiteSpace(_settings.ServerExePath) || !File.Exists(_settings.ServerExePath))
+            return false;
+
+        var serverDir = Path.GetDirectoryName(_settings.ServerExePath) ?? "";
+
+        SetState(ServerState.Starting);
+
+        var configPath = Path.Combine(serverDir, "serverconfig.xml");
+        var configBackup = configPath + ".bak";
+
+        // ── Step 1: Back up config BEFORE SteamCMD can touch it ──
+        if (File.Exists(configPath))
+        {
+            try
+            {
+                File.Copy(configPath, configBackup, overwrite: true);
+                OutputReceived?.Invoke("Backed up serverconfig.xml (protection against Steam updates).");
+            }
+            catch (Exception ex)
+            {
+                OutputReceived?.Invoke($"[WARN] Could not back up config: {ex.Message}");
+            }
+        }
+
+        // ── Step 2: Auto-update via SteamCMD (if enabled) ──
+        if (_settings.AutoUpdateOnStart && _steamCmd.IsSteamCmdAvailable)
+        {
+            OutputReceived?.Invoke("Checking for updates...");
+            var updated = await _steamCmd.InstallOrUpdateServerAsync();
+            OutputReceived?.Invoke(updated ? "Update check complete." : "Update check failed — starting anyway.");
+        }
+
+        // ── Step 3: Restore config from backup (undo any Steam overwrites) ──
+        if (File.Exists(configBackup))
+        {
+            try
+            {
+                File.Copy(configBackup, configPath, overwrite: true);
+                OutputReceived?.Invoke("Restored serverconfig.xml from backup.");
+            }
+            catch (Exception ex)
+            {
+                OutputReceived?.Invoke($"[WARN] Could not restore config backup: {ex.Message}");
+            }
+        }
+
+        // ── Step 3: Rotate old logs (keep latest 20) ──
+        RotateLogs(serverDir);
+
+        // ── Step 4: Write steam_appid.txt + set env vars ──
+        try
+        {
+            await File.WriteAllTextAsync(Path.Combine(serverDir, "steam_appid.txt"), SteamAppId);
+        }
+        catch { /* non-critical */ }
+
+        // ── Step 5: Build log filename with timestamp ──
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd__HH-mm-ss");
+        var logFileName = $"output_log_dedi__{timestamp}.txt";
+        _currentLogFile = Path.Combine(serverDir, logFileName);
+
+        OutputReceived?.Invoke($"Log file: {logFileName}");
+
+        // ── Step 6: Launch server with proper arguments ──
+        var args = $"-logfile \"{_currentLogFile}\" -quit -batchmode -nographics -configfile=serverconfig.xml -dedicated";
+
+        var startInfo = new ProcessStartInfo
+        {
+            FileName = _settings.ServerExePath,
+            Arguments = args,
+            WorkingDirectory = serverDir,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+
+        // Set Steam environment variables
+        startInfo.EnvironmentVariables["SteamAppId"] = SteamAppId;
+        startInfo.EnvironmentVariables["SteamGameId"] = SteamAppId;
+
+        _serverProcess = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
+        _serverProcess.OutputDataReceived += (_, e) =>
+        {
+            if (e.Data is not null)
+                OutputReceived?.Invoke(e.Data);
+        };
+        _serverProcess.ErrorDataReceived += (_, e) =>
+        {
+            if (e.Data is not null)
+                OutputReceived?.Invoke($"[ERR] {e.Data}");
+        };
+        _serverProcess.Exited += (_, _) =>
+        {
+            _startedAt = null;
+            SetState(ServerState.Stopped);
+        };
+
+        try
+        {
+            OutputReceived?.Invoke($"Starting server: {Path.GetFileName(_settings.ServerExePath)} {args}");
+            _serverProcess.Start();
+            _serverProcess.BeginOutputReadLine();
+            _serverProcess.BeginErrorReadLine();
+            _startedAt = DateTime.UtcNow;
+            SetState(ServerState.Running);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            OutputReceived?.Invoke($"[ERR] Failed to start server: {ex.Message}");
+            SetState(ServerState.Stopped);
+            return false;
+        }
+    }
+
+    public async Task StopAsync(TelnetService? telnet = null, int gracefulTimeoutMs = 15000)
+    {
+        if (CurrentState != ServerState.Running)
+            return;
+
+        SetState(ServerState.Stopping);
+
+        if (telnet is { IsConnected: true })
+        {
+            OutputReceived?.Invoke("Sending shutdown command...");
+            await telnet.SendCommandAsync("shutdown");
+            var sw = Stopwatch.StartNew();
+            while (_serverProcess is { HasExited: false } && sw.ElapsedMilliseconds < gracefulTimeoutMs)
+                await Task.Delay(500);
+        }
+
+        if (_serverProcess is { HasExited: false })
+        {
+            OutputReceived?.Invoke("Force killing server process...");
+            try { _serverProcess.Kill(entireProcessTree: true); }
+            catch { /* already exited */ }
+        }
+
+        _startedAt = null;
+        SetState(ServerState.Stopped);
+        OutputReceived?.Invoke("Server stopped.");
+    }
+
+    public async Task RestartAsync(TelnetService? telnet = null)
+    {
+        await StopAsync(telnet);
+        await Task.Delay(2000);
+        await StartAsync();
+    }
+
+    public bool IsProcessRunning()
+    {
+        return _serverProcess is { HasExited: false };
+    }
+
+    public string? CurrentLogFile => _currentLogFile;
+
+    private void RotateLogs(string serverDir)
+    {
+        try
+        {
+            var logFiles = Directory.GetFiles(serverDir, "output_log_dedi__*.txt")
+                .OrderByDescending(f => f)
+                .ToArray();
+
+            if (logFiles.Length > MaxLogFiles)
+            {
+                var toDelete = logFiles.Skip(MaxLogFiles);
+                foreach (var file in toDelete)
+                {
+                    try
+                    {
+                        File.Delete(file);
+                        OutputReceived?.Invoke($"Cleaned old log: {Path.GetFileName(file)}");
+                    }
+                    catch { /* file may be locked */ }
+                }
+            }
+        }
+        catch { /* non-critical */ }
+    }
+
+    private void SetState(ServerState state)
+    {
+        CurrentState = state;
+        StateChanged?.Invoke(state);
+    }
+
+    public void Dispose()
+    {
+        if (_serverProcess is { HasExited: false })
+        {
+            try { _serverProcess.Kill(entireProcessTree: true); }
+            catch { /* best effort */ }
+        }
+        _serverProcess?.Dispose();
+    }
+}
