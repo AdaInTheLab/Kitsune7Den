@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 using Kitsune7Den.Models;
@@ -9,6 +10,12 @@ namespace Kitsune7Den;
 
 public partial class App : Application
 {
+    /// <summary>
+    /// Single source of truth for display version, read from the assembly (set via csproj Version).
+    /// </summary>
+    public static string AppVersion { get; } =
+        $"v{Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0.0.0"}";
+
     private ServiceProvider? _serviceProvider;
 
     private void OnStartup(object sender, StartupEventArgs e)

@@ -127,6 +127,21 @@
         <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
     </Style>
 
+    <!-- PasswordBox (mirrors DarkTextBox) -->
+    <Style x:Key="DarkPasswordBox" TargetType="PasswordBox">
+        <Setter Property="Background">
+            <Setter.Value>
+                <SolidColorBrush Color="#FF0d0d1a" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Padding" Value="8,6" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextPrimaryBrush}" />
+    </Style>
+
     <!-- Card Panel -->
     <Style x:Key="Card" TargetType="Border">
         <Setter Property="Background" Value="{DynamicResource BgMediumBrush}" />

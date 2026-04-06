@@ -9,6 +9,7 @@
     <ApplicationIcon>Resources\icon.ico</ApplicationIcon>
     <AssemblyName>Kitsune7Den</AssemblyName>
     <RootNamespace>Kitsune7Den</RootNamespace>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

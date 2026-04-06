@@ -1,6 +1,7 @@
 <Window x:Class="Kitsune7Den.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:Kitsune7Den"
         xmlns:views="clr-namespace:Kitsune7Den.Views"
         xmlns:vm="clr-namespace:Kitsune7Den.ViewModels"
         Title="Kitsune7Den" Width="1100" Height="700" MinWidth="800" MinHeight="500"
@@ -61,7 +62,7 @@
                 <!-- Version info at very bottom -->
                 <TextBlock DockPanel.Dock="Bottom" Foreground="{DynamicResource TextSecondaryBrush}"
                            FontSize="10" Opacity="0.5" Margin="20,0,0,10"
-                           Text="v1.0.0" />
+                           Text="{x:Static local:App.AppVersion}" />
 
                 <!-- Settings pinned to bottom (must dock before fill child) -->
                 <Button DockPanel.Dock="Bottom" Style="{StaticResource NavButton}"

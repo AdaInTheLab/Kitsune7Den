@@ -1,6 +1,7 @@
 <UserControl x:Class="Kitsune7Den.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Kitsune7Den"
              xmlns:converters="clr-namespace:Kitsune7Den.Converters">
 
     <UserControl.Resources>
@@ -41,9 +42,15 @@
                             </TextBlock.Style>
                         </TextBlock>
                     </StackPanel>
-                    <TextBlock Text="v1.0.0 | github.com/AdaInTheLab/Kitsune7Den"
-                               Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
-                               Opacity="0.5" Margin="0,12,0,0" />
+                    <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" FontSize="10"
+                               Opacity="0.5" Margin="0,12,0,0">
+                        <Run Text="{x:Static local:App.AppVersion}" /><Run Text=" | " />
+                        <Hyperlink NavigateUri="https://github.com/AdaInTheLab/Kitsune7Den"
+                                   RequestNavigate="Hyperlink_RequestNavigate"
+                                   Foreground="{DynamicResource TextSecondaryBrush}">
+                            github.com/AdaInTheLab/Kitsune7Den
+                        </Hyperlink>
+                    </TextBlock>
                 </StackPanel>
             </Border>
 
@@ -174,22 +181,36 @@
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="Telnet Password" Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11" Margin="0,0,0,4" />
-                            <PasswordBox x:Name="TelnetPasswordBox" Loaded="TelnetPasswordBox_Loaded"
-                                         PasswordChanged="TelnetPasswordBox_Changed"
-                                                    BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1"
-                                         Padding="8,6" FontSize="13" />
+                            <PasswordBox x:Name="TelnetPasswordBox" Style="{StaticResource DarkPasswordBox}"
+                                         Loaded="TelnetPasswordBox_Loaded"
+                                         PasswordChanged="TelnetPasswordBox_Changed" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
             </Border>
 
             <!-- Save + Status -->
-            <StackPanel Orientation="Horizontal" Margin="0,4,0,24">
+            <StackPanel Orientation="Horizontal" Margin="0,4,0,12">
                 <Button Content="Save All Settings" Style="{StaticResource ActionButton}"
                         Command="{Binding SaveCommand}" Margin="0,0,16,0" />
                 <TextBlock Text="{Binding StatusMessage}" Foreground="{DynamicResource TextSecondaryBrush}"
                            FontSize="12" VerticalAlignment="Center" />
             </StackPanel>
+
+            <!-- Terms of Use -->
+            <Border Style="{StaticResource Card}" Opacity="0.7" Margin="0,0,0,24">
+                <StackPanel>
+                    <TextBlock Style="{StaticResource SectionHeader}" Text="Terms of Use" FontSize="13" />
+                    <TextBlock Foreground="{DynamicResource TextSecondaryBrush}" FontSize="11"
+                               TextWrapping="Wrap" LineHeight="18">
+                        Kitsune7Den is provided as-is for personal, non-commercial use only.
+                        No warranty or guarantee of any kind is offered. The author is not
+                        responsible for data loss, server issues, or any other damages arising
+                        from use of this software. Use at your own risk. This tool is not
+                        affiliated with or endorsed by The Fun Pimps or Valve.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
 
         </StackPanel>
     </ScrollViewer>

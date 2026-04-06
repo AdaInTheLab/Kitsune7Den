@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Windows.Controls;
+using System.Windows.Navigation;
 using Kitsune7Den.ViewModels;
 
 namespace Kitsune7Den.Views;
@@ -25,5 +27,11 @@ public partial class SettingsView : UserControl
         {
             vm.TelnetPassword = pb.Password;
         }
+    }
+
+    private void Hyperlink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+    {
+        Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+        e.Handled = true;
     }
 }
