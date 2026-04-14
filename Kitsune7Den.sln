@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{32C7C037-F60
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitsune7Den", "src\Kitsune7Den\Kitsune7Den.csproj", "{9A450DAC-1710-49D7-B274-EFE3CFD2605C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{239639D3-32AE-49FC-A77A-C6C6559ED660}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kitsune7Den.Tests", "tests\Kitsune7Den.Tests\Kitsune7Den.Tests.csproj", "{8136E4A3-E040-4156-8247-3A80D792598C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +24,13 @@ Global
 		{9A450DAC-1710-49D7-B274-EFE3CFD2605C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A450DAC-1710-49D7-B274-EFE3CFD2605C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A450DAC-1710-49D7-B274-EFE3CFD2605C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8136E4A3-E040-4156-8247-3A80D792598C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8136E4A3-E040-4156-8247-3A80D792598C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8136E4A3-E040-4156-8247-3A80D792598C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8136E4A3-E040-4156-8247-3A80D792598C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9A450DAC-1710-49D7-B274-EFE3CFD2605C} = {32C7C037-F607-426B-B845-D0458C75989A}
+		{8136E4A3-E040-4156-8247-3A80D792598C} = {239639D3-32AE-49FC-A77A-C6C6559ED660}
 	EndGlobalSection
 EndGlobal

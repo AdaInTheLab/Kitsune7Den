@@ -6,6 +6,15 @@
 <p align="center"><strong>7 Days to Die Server Manager</strong></p>
 <p align="center">A standalone Windows desktop app for managing your 7D2D dedicated server.<br/>No web stack. No browser. Just a simple exe.</p>
 
+<p align="center">
+  <a href="https://github.com/Kitsune-Den/Kitsune7Den/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Kitsune-Den/Kitsune7Den/ci.yml?branch=main&label=build&logo=github" alt="Build Status" /></a>
+  <a href="https://github.com/Kitsune-Den/Kitsune7Den/releases/latest"><img src="https://img.shields.io/github/v/release/Kitsune-Den/Kitsune7Den?label=release&color=e94560" alt="Latest Release" /></a>
+  <a href="https://github.com/Kitsune-Den/Kitsune7Den/releases"><img src="https://img.shields.io/github/downloads/Kitsune-Den/Kitsune7Den/total?label=downloads&color=4ecca3" alt="Total Downloads" /></a>
+  <a href="https://github.com/Kitsune-Den/Kitsune7Den/blob/main/LICENSE"><img src="https://img.shields.io/github/license/Kitsune-Den/Kitsune7Den?color=blue" alt="License" /></a>
+  <img src="https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet" alt=".NET 8" />
+  <img src="https://img.shields.io/badge/platform-windows-0078D4?logo=windows" alt="Platform: Windows" />
+</p>
+
 ---
 
 ## Features
@@ -51,7 +60,7 @@ Manual or scheduled backups of your save. Restore with an automatic safety backu
 ## Quick Start
 
 1. Download `Kitsune7Den.exe` from [Releases](https://github.com/Kitsune-Den/Kitsune7Den/releases)
-2. Run it
+2. Run it — *if Windows shows a SmartScreen warning, see [INSTALL.md](INSTALL.md) for why and how to proceed*
 3. Browse to your `7DaysToDieServer.exe`
 4. Hit Start
 
